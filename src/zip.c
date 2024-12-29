@@ -34,7 +34,6 @@
 #include <unistd.h>
 #endif
 
-#include "miniz.h"
 #include "zip.h"
 
 #ifdef _MSC_VER
@@ -79,78 +78,7 @@
 #define UNX_IFCHR 0020000  /* Unix character special   (not Amiga) */
 #define UNX_IFIFO 0010000  /* Unix fifo    (BCC, not MSC or Amiga) */
 
-struct zip_entry_t {
-  ssize_t index;
-  char *name;
-  mz_uint64 uncomp_size;
-  mz_uint64 comp_size;
-  mz_uint32 uncomp_crc32;
-  mz_uint64 dir_offset;
-  mz_uint8 header[MZ_ZIP_LOCAL_DIR_HEADER_SIZE];
-  mz_uint64 header_offset;
-  mz_uint16 method;
-  mz_zip_writer_add_state state;
-  tdefl_compressor comp;
-  mz_uint32 external_attr;
-  time_t m_time;
-};
 
-struct zip_t {
-  mz_zip_archive archive;
-  mz_uint level;
-  struct zip_entry_t entry;
-};
-
-enum zip_modify_t {
-  MZ_KEEP = 0,
-  MZ_DELETE = 1,
-  MZ_MOVE = 2,
-};
-
-struct zip_entry_mark_t {
-  ssize_t file_index;
-  enum zip_modify_t type;
-  mz_uint64 m_local_header_ofs;
-  size_t lf_length;
-};
-
-static const char *const zip_errlist[35] = {
-    NULL,
-    "not initialized\0",
-    "invalid entry name\0",
-    "entry not found\0",
-    "invalid zip mode\0",
-    "invalid compression level\0",
-    "no zip 64 support\0",
-    "memset error\0",
-    "cannot write data to entry\0",
-    "cannot initialize tdefl compressor\0",
-    "invalid index\0",
-    "header not found\0",
-    "cannot flush tdefl buffer\0",
-    "cannot write entry header\0",
-    "cannot create entry header\0",
-    "cannot write to central dir\0",
-    "cannot open file\0",
-    "invalid entry type\0",
-    "extracting data using no memory allocation\0",
-    "file not found\0",
-    "no permission\0",
-    "out of memory\0",
-    "invalid zip archive name\0",
-    "make dir error\0",
-    "symlink error\0",
-    "close archive error\0",
-    "capacity size too small\0",
-    "fseek error\0",
-    "fread error\0",
-    "fwrite error\0",
-    "cannot initialize reader\0",
-    "cannot initialize writer\0",
-    "cannot initialize writer from reader\0",
-    "invalid argument\0",
-    "cannot initialize reader iterator\0",
-};
 
 const char *zip_strerror(int errnum) {
   errnum = -errnum;
